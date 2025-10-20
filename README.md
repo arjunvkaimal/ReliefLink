@@ -1,19 +1,73 @@
-## 📌 Overview
-**Disaster Management & Resource Allocation System** is a centralized web-based platform designed to enable **real-time tracking, coordination, and distribution of resources and volunteers during emergencies**. It bridges the gap between **victims, volunteers, and relief agencies**, ensuring that relief efforts are efficient and timely.
+# Welcome to your Lovable project
 
-The system provides a **scalable, secure, and real-time** solution for handling large-scale disaster operations, focusing on solving issues like lack of centralized data, delayed response times, and limited transparency in fundraising.
+## Project info
 
----
-## 🚀 Features
-- 👤 **User Management** – Register and manage users with roles like admin, victim, and donor, with role-based access control.
-- 📝 **Request Handling** – Victims can submit requests for aid and track their status.
-- 🎯 **Resource Allocation** – Admins allocate resources to requests, manage inventories, and monitor resource usage.
-- 💸 **Fundraising Module** – Create and manage fundraising campaigns and track goals versus amounts raised.
-- 📦 **Donation Tracking** – Accept and record donations with full transparency and donor details.
-- 📊 **Reports & Transparency** – Generate incident reports for administrators and allow volunteers to submit field reports to monitor relief efforts.
+**URL**: https://lovable.dev/projects/534467b5-9176-47bf-b5ca-2f90ee49cfe1
 
----
-## ⚙️ Tech Stack
-- **Frontend:** HTML, CSS, JavaScript, React
-- **Backend:** Node.js/Express
-- **Database:** MySQL
+## How can I edit this code?
+
+There are several ways of editing your application.
+
+**Use Lovable**
+
+Simply visit the [Lovable Project](https://lovable.dev/projects/534467b5-9176-47bf-b5ca-2f90ee49cfe1) and start prompting.
+
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
+```
+
+**Edit a file directly in GitHub**
+
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
+
+**Use GitHub Codespaces**
+
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
+
+## What technologies are used for this project?
+
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/534467b5-9176-47bf-b5ca-2f90ee49cfe1) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
