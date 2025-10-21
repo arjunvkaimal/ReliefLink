@@ -14,7 +14,6 @@ export const UserReportsList = ({ refreshTrigger }) => {
   const fetchReports = async () => {
     setLoading(true);
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -84,7 +83,7 @@ export const UserReportsList = ({ refreshTrigger }) => {
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-primary" />
-                  <h4 className="font-semibold">{report.report_type}</h4>
+                  <h4 className="font-semibold">Field Report</h4>
                 </div>
                 <Badge variant="secondary">Submitted</Badge>
               </div>
@@ -95,7 +94,8 @@ export const UserReportsList = ({ refreshTrigger }) => {
 
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="w-3 h-3" />
-                {new Date(report.report_date).toLocaleDateString()}
+                {new Date(report.report_date).toLocaleDateString()} at{" "}
+                {new Date(report.report_date).toLocaleTimeString()}
               </div>
             </div>
           ))}
