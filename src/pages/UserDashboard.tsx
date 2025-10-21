@@ -20,121 +20,117 @@ import { DonationForm } from "@/components/user/DonationForm";
 import { UserRequestsList } from "@/components/user/UserRequestsList";
 import { UserDonationsList } from "@/components/user/UserDonationsList";
 import { UserVolunteerStatus } from "@/components/user/UserVolunteerStatus";
+import { UserReportForm } from "@/components/user/UserReportForm";
+import { UserReportsList } from "@/components/user/UserReportsList";
 
-export default function UserDashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+const UserDashboard = () => {
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshReports, setRefreshReports] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Check if user is authenticated
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session) {
-          navigate('/auth');
-          return;
-        }
+    checkUser();
+  }, []);
 
-        setUser(session.user);
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      navigate("/auth");
+      return;
+    }
 
-        // Fetch user profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+    setUser(session.user);
 
-        if (profileData) {
-          setProfile(profileData);
-        }
+    // Check if user has admin role
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
 
-        // Check if user is admin and redirect
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .single();
+    if (roleData) {
+      navigate("/admin");
+      return;
+    }
 
-        if (roleData?.role === 'admin') {
-          // Redirect admins to admin dashboard
-          navigate('/admin-dashboard');
-          return;
-        }
+    // Fetch profile
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .single();
 
-        setLoading(false);
-      } catch (error) {
-        console.error('Error checking authentication:', error);
-        navigate('/auth');
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
+    setProfile(profileData);
+    setLoading(false);
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate('/auth');
+    navigate("/auth");
+    toast({
+      title: "Signed out successfully",
+    });
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p className="text-muted-foreground">Loading your dashboard...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
-      <div className="container mx-auto p-6">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-3">
-            <Shield className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">ReliefLink</h1>
-              <p className="text-muted-foreground">Welcome back, {profile?.name || 'User'}</p>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">User Dashboard</h1>
           </div>
-          <Button onClick={handleSignOut} variant="outline">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">
+              {profile?.name || user?.email}
+            </span>
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
+      </header>
 
-        {/* Main Content */}
-        <Tabs defaultValue="requests" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
-            <TabsTrigger value="requests">
-              <AlertCircle className="w-4 h-4 mr-2" />
-              Requests
-            </TabsTrigger>
-            <TabsTrigger value="volunteer">
-              <Users className="w-4 h-4 mr-2" />
-              Volunteer
-            </TabsTrigger>
-            <TabsTrigger value="calls">
-              <FileText className="w-4 h-4 mr-2" />
-              Calls
-            </TabsTrigger>
-            <TabsTrigger value="donate">
-              <Heart className="w-4 h-4 mr-2" />
-              Donate
-            </TabsTrigger>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <Tabs defaultValue="requests" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="requests">Requests</TabsTrigger>
+            <TabsTrigger value="volunteer">Volunteer</TabsTrigger>
+            <TabsTrigger value="calls">Calls</TabsTrigger>
+            <TabsTrigger value="donate">Donate</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="requests" className="space-y-6">
+          {/* Requests Tab */}
+          <TabsContent value="requests" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Submit Help Request</CardTitle>
-                <CardDescription>Request assistance during an emergency</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5" />
+                  Submit Help Request
+                </CardTitle>
+                <CardDescription>
+                  Request assistance during emergencies
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <VictimRequestForm userId={user?.id} />
@@ -143,8 +139,10 @@ export default function UserDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>My Requests</CardTitle>
-                <CardDescription>Track your submitted requests</CardDescription>
+                <CardTitle>Your Requests</CardTitle>
+                <CardDescription>
+                  Track your submitted help requests
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <UserRequestsList userId={user?.id} />
@@ -152,11 +150,17 @@ export default function UserDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="volunteer" className="space-y-6">
+          {/* Volunteer Tab */}
+          <TabsContent value="volunteer" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Register as Volunteer</CardTitle>
-                <CardDescription>Join our volunteer network to help others</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Volunteer Registration
+                </CardTitle>
+                <CardDescription>
+                  Register as a volunteer and help others
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <VolunteerRegistrationForm userId={user?.id} />
@@ -165,8 +169,10 @@ export default function UserDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>My Volunteer Status</CardTitle>
-                <CardDescription>View your volunteer profile and applications</CardDescription>
+                <CardTitle>Your Volunteer Status</CardTitle>
+                <CardDescription>
+                  View your volunteer profile and applications
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <UserVolunteerStatus userId={user?.id} />
@@ -174,11 +180,17 @@ export default function UserDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="calls" className="space-y-6">
+          {/* Calls Tab */}
+          <TabsContent value="calls" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Volunteer Opportunities</CardTitle>
-                <CardDescription>Browse and apply to volunteer calls</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Active Volunteer Calls
+                </CardTitle>
+                <CardDescription>
+                  Apply for disaster relief volunteer opportunities
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <VolunteerCallBoard userId={user?.id} />
@@ -186,11 +198,17 @@ export default function UserDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="donate" className="space-y-6">
+          {/* Donate Tab */}
+          <TabsContent value="donate" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Make a Donation</CardTitle>
-                <CardDescription>Support relief efforts with your contribution</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5" />
+                  Make a Donation
+                </CardTitle>
+                <CardDescription>
+                  Support active relief campaigns
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <DonationForm userId={user?.id} />
@@ -199,16 +217,50 @@ export default function UserDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>My Donations</CardTitle>
-                <CardDescription>View your donation history</CardDescription>
+                <CardTitle>Your Donations</CardTitle>
+                <CardDescription>
+                  View your contribution history
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <UserDonationsList userId={user?.id} />
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Submit Field Report
+                </CardTitle>
+                <CardDescription>
+                  Report your volunteer activities and observations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UserReportForm onSuccess={() => setRefreshReports(prev => prev + 1)} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Reports</CardTitle>
+                <CardDescription>
+                  View your submitted field reports
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UserReportsList refreshTrigger={refreshReports} />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
-      </div>
+      </main>
     </div>
   );
-}
+};
+
+export default UserDashboard;
