@@ -107,7 +107,7 @@ export default function AdminDashboard() {
             <Shield className="w-8 h-8 text-primary" />
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Welcome back, {profile?.name || 'Admin'}</p>
+              <p className="text-muted-foreground">Welcome   back, {profile?.name || 'Admin'}</p>
             </div>
           </div>
           <Button onClick={handleSignOut} variant="outline">
